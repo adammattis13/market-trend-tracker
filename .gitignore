@@ -14,3 +14,14 @@ trend_log.csv
 
 # macOS system files
 .DS_Store
+
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+
+# macOS system files
+.DS_Store
+
+# Logs and backups
+trend_log.csv
+trend_log_backup_*.csv
