@@ -25,3 +25,8 @@ __pycache__/
 # Logs and backups
 trend_log.csv
 trend_log_backup_*.csv
+
+
+__pycache__/
+*.pyc
+.DS_Store

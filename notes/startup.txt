@@ -1,0 +1,28 @@
+# ✅ Market Trend Tracker — Quick Start
+
+1. 🔁 Clean the environment (optional):
+cd ~/market-trend-tracker
+rm -f trend_log.csv
+find . -type f -name "*.pyc" -delete
+find . -type d -name "__pycache__" -exec rm -r {} +
+
+2. 🐍 Activate virtual environment:
+cd ~/market-trend-tracker
+source venv/bin/activate
+
+3. 📦 Install requirements (if needed):
+pip install streamlit pandas matplotlib seaborn requests altair streamlit-autorefresh
+
+4. 🔑 Set API key:
+export FINNHUB_API_KEY="your_finnhub_api_key"
+
+# Or use Streamlit secrets:
+# Create .streamlit/secrets.toml with:
+# [api_keys]
+# finnhub = "your_finnhub_api_key"
+
+5. ⚙️ Run trend analysis:
+python valid_ticker_filter.py
+
+6. 🚀 Launch the dashboard:
+streamlit run dashboard.py
