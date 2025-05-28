@@ -1,0 +1,16 @@
+# Ignore virtual environments
+venv/
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore Streamlit logs and environment
+.streamlit/
+
+# Ignore logs or local data files
+trend_log.csv
+*.bak
+
+# macOS system files
+.DS_Store

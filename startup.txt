@@ -1,0 +1,70 @@
+# ✅ Market Trend Tracker — Startup Instructions
+
+### 0. **Clean the Environment (Optional but Recommended)**
+To remove temporary files and clear log/cache artifacts before a fresh start:
+```bash
+cd ~/market-trend-tracker
+rm -f trend_log.csv
+find . -type f -name "*.pyc" -delete
+find . -type d -name "__pycache__" -exec rm -r {} +
+```
+
+---
+
+### 1. **Activate Your Virtual Environment**
+```bash
+cd ~/market-trend-tracker
+source venv/bin/activate
+```
+
+---
+
+### 2. **Install Required Dependencies**
+If not already installed, run:
+```bash
+pip install -r requirements.txt
+```
+
+If `requirements.txt` is missing or outdated, manually ensure these are installed:
+```bash
+pip install streamlit yfinance pandas matplotlib seaborn yahoo_fin requests streamlit-autorefresh
+```
+
+---
+
+### 3. **Optional: Create Initial Cache**
+To build the local ticker cache (optional but speeds up future runs):
+```bash
+python3
+>>> from ticker_universe import get_sector_industry_map
+>>> get_sector_industry_map(limit=1000, use_cache=False)
+>>> exit()
+```
+
+---
+
+### 4. **Run the Trend Analyzer Manually (Optional)**
+To populate or test `trend_log.csv`:
+```bash
+python3 sector_analyzer.py
+```
+
+---
+
+### 5. **Launch the Streamlit Dashboard**
+```bash
+streamlit run dashboard.py
+```
+
+Access the dashboard in your browser:
+- Local: [http://localhost:8501](http://localhost:8501)
+- Network: http://<your_local_IP>:8501 (useful for external devices)
+
+---
+
+### 6. **Optional: Enable Watchdog for Better Performance**
+On macOS:
+```bash
+xcode-select --install
+pip install watchdog
+```
