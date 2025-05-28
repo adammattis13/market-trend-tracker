@@ -5,6 +5,7 @@ import os
 import pandas as pd
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from ticker_filter import filter_valid_tickers  # NEW IMPORT
 
 # ------------------------------------------
 # Analyze average trend score by sector
@@ -49,11 +50,17 @@ def analyze_sector_trends(sector_map, log_file="trend_log.csv", max_log_entries=
 
     for sector, tickers in sector_map.items():
         print(f"\n➡️  Sector: {sector} ({len(tickers)} tickers)")
+        valid_tickers = filter_valid_tickers(tickers)
+
+        if not valid_tickers:
+            print(f"   ⚠️  No valid data in {sector}")
+            continue
+
         trends = []
         ticker_scores = []
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
-            future_to_ticker = {executor.submit(fetch_ticker_trend, ticker): ticker for ticker in tickers}
+            future_to_ticker = {executor.submit(fetch_ticker_trend, ticker): ticker for ticker in valid_tickers}
             for future in as_completed(future_to_ticker):
                 ticker, trend = future.result()
                 if trend is not None:

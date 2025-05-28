@@ -8,6 +8,7 @@ from ticker_universe import get_ticker_sector_map
 from sector_analyzer import analyze_sector_trends
 import requests
 import concurrent.futures
+import os
 
 # Configure layout
 st.set_page_config(page_title="Market Trend Dashboard", layout="wide")
@@ -76,12 +77,17 @@ except Exception as e:
 # Real-time news sentiment overlay
 st.subheader("📰 Real-time News Sentiment Overlays")
 try:
-    sentiment_api_url = "https://api.marketaux.com/v1/news/all?api_token=YOUR_API_KEY&language=en&filter_entities=true"
+    api_key = os.getenv("MARKETAUX_API_KEY")
+    if not api_key:
+        raise ValueError("Missing API key: please set MARKETAUX_API_KEY environment variable.")
+
+    sentiment_api_url = f"https://api.marketaux.com/v1/news/all?api_token={api_key}&language=en&filter_entities=true"
     response = requests.get(sentiment_api_url)
     if response.status_code == 200:
         news_items = response.json().get("data", [])[:10]
         for article in news_items:
-            st.markdown(f"**{article['entities'][0]['name'] if article['entities'] else 'General'}**: [{article['title']}]({article['url']})")
+            entity_name = article['entities'][0]['name'] if article.get('entities') else 'General'
+            st.markdown(f"**{entity_name}**: [{article['title']}]({article['url']})")
     else:
         st.warning("⚠️ Unable to fetch news sentiment.")
 except Exception as e:
