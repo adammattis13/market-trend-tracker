@@ -849,3 +849,10 @@ def show_backtesting():
             st.plotly_chart(fig, use_container_width=True)
         except Exception as e:
             st.error(f"❌ Error creating backtest chart: {str(e)}")
+   
+# This is important for Streamlit multi-page apps
+if __name__ == "__main__":
+    show()
+    
+# This ensures it works in multi-page app
+    show()

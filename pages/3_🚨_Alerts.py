@@ -308,3 +308,10 @@ def display_alert_settings():
     # Save settings
     if st.button("💾 Save Settings", use_container_width=True):
         st.success("✅ Settings saved successfully!")
+        
+# This is important for Streamlit multi-page apps
+if __name__ == "__main__":
+    show()
+    
+# This ensures it works in multi-page app
+    show()
