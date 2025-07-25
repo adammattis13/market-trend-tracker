@@ -1,41 +1,4 @@
-# Market Trend Tracker - Clean .gitignore
-
-# ===== MARKET TREND TRACKER SPECIFIC =====
-# Output Data Files
-trend_df.csv
-trend_log.csv
-*.csv
-
-# Generated Data Files
-all_tickers.json
-industry_map.json
-invalid_tickers.txt
-valid_tickers.txt
-
-# Database Files
-market_trends.db
-*.db
-*.sqlite
-*.sqlite3
-
-# Log Files  
-trend_analyzer.log
-*.log
-logs/
-*.log.*
-
-# API Keys and Secrets
-.streamlit/secrets.toml
-.streamlit/config.toml
-.streamlit/credentials.toml
-.env
-.env.local
-.env.production
-*.key
-*.pem
-*.crt
-
-# ===== PYTHON =====
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
@@ -53,30 +16,61 @@ parts/
 sdist/
 var/
 wheels/
+pip-wheel-metadata/
 share/python-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
 MANIFEST
 
-# ===== VIRTUAL ENVIRONMENTS =====
+# Virtual Environment
 venv/
 env/
 ENV/
-.venv/
 env.bak/
 venv.bak/
+.venv/
 
-# ===== IDEs AND EDITORS =====
+# Data files
+data/
+*.csv
+*.xlsx
+*.xls
+*.json
+!requirements.txt
+!sample_data/*.csv
+
+# Backups
+*.backup
+*.bak
+*.tmp
+*.temp
+*.old
+*_backup
+*_old
+
+# Secrets and Configuration
+.env
+.env.local
+.env.*.local
+.streamlit/secrets.toml
+secrets.toml
+api_keys.txt
+credentials.json
+
+# IDE and Editors
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 .project
-.pydevproject
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
 
-# ===== OPERATING SYSTEM =====
+# OS files
 .DS_Store
 .DS_Store?
 ._*
@@ -84,32 +78,54 @@ venv.bak/
 .Trashes
 ehthumbs.db
 Thumbs.db
+desktop.ini
 
-# ===== TESTING =====
-.pytest_cache/
+# Logs
+logs/
+*.log
+*.out
+*.err
+error.log
+access.log
+
+# Test files
+test/
+tests/
+*.test
+*.spec
+
+# Documentation build files
+docs/_build/
+site/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# pyenv
+.python-version
+
+# Coverage reports
+htmlcov/
 .coverage
 .coverage.*
-htmlcov/
-.tox/
 .cache
 nosetests.xml
 coverage.xml
 *.cover
 .hypothesis/
+.pytest_cache/
 
-# ===== JUPYTER =====
-.ipynb_checkpoints
+# Database
+*.db
+*.sqlite
+*.sqlite3
 
-# ===== PYTHON TOOLS =====
-.mypy_cache/
-.dmypy.json
-dmypy.json
-.python-version
+# Distribution / packaging
+.Python
+*.manifest
+*.spec
 
-# ===== TEMPORARY FILES =====
-tmp/
-temp/
-*.tmp
-*.bak
-*.backup
-*_backup/
+# Temporary files
+~$*
+.~*
