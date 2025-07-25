@@ -1,112 +1,41 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+# Market Trend Tracker - Clean .gitignore
 
-# Virtual Environment
-venv/
-ENV/
-env/
-.venv/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Environment variables
-.env
-.env.local
-.env.production
-secrets.toml
-.streamlit/secrets.toml
-
-# Database
-*.db
-*.sqlite
-*.sqlite3
-market_trends.db
-
-# Logs
-*.log
-logs/
-*.log.*
-
-# Test coverage
-htmlcov/
-.tox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-.hypothesis/
-.pytest_cache/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pyenv
-.python-version
-
-# Streamlit
-.streamlit/config.toml
-.streamlit/credentials.toml
-
-# Production
-*.pem
-*.key
-*.crt
-
-# Backup files
-*.bak
-*.backup
-*_backup/
-
-# OS files
-Thumbs.db
-.DS_Store
-
-# Temporary files
-tmp/
-temp/
-*.tmp
-
-# Market Trend Tracker .gitignore
-
+# ===== MARKET TREND TRACKER SPECIFIC =====
 # Output Data Files
 trend_df.csv
 trend_log.csv
 *.csv
 
+# Generated Data Files
+all_tickers.json
+industry_map.json
+invalid_tickers.txt
+valid_tickers.txt
+
+# Database Files
+market_trends.db
+*.db
+*.sqlite
+*.sqlite3
+
+# Log Files  
+trend_analyzer.log
+*.log
+logs/
+*.log.*
+
 # API Keys and Secrets
 .streamlit/secrets.toml
+.streamlit/config.toml
+.streamlit/credentials.toml
 .env
+.env.local
+.env.production
 *.key
+*.pem
+*.crt
 
-# Python
+# ===== PYTHON =====
 __pycache__/
 *.py[cod]
 *$py.class
@@ -130,15 +59,15 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-# Virtual Environments
+# ===== VIRTUAL ENVIRONMENTS =====
 venv/
 env/
 ENV/
+.venv/
 env.bak/
 venv.bak/
-.venv/
 
-# IDEs and Editors
+# ===== IDEs AND EDITORS =====
 .vscode/
 .idea/
 *.swp
@@ -147,7 +76,7 @@ venv.bak/
 .project
 .pydevproject
 
-# Operating System
+# ===== OPERATING SYSTEM =====
 .DS_Store
 .DS_Store?
 ._*
@@ -156,19 +85,31 @@ venv.bak/
 ehthumbs.db
 Thumbs.db
 
-# Logs
-*.log
-logs/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# pytest
+# ===== TESTING =====
 .pytest_cache/
 .coverage
+.coverage.*
 htmlcov/
+.tox/
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
 
-# mypy
+# ===== JUPYTER =====
+.ipynb_checkpoints
+
+# ===== PYTHON TOOLS =====
 .mypy_cache/
 .dmypy.json
 dmypy.json
+.python-version
+
+# ===== TEMPORARY FILES =====
+tmp/
+temp/
+*.tmp
+*.bak
+*.backup
+*_backup/
