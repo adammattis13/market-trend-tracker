@@ -245,7 +245,7 @@ class MarketDashboard:
         # Add acknowledge button
         if st.button(f"Acknowledge", key=f"ack_{alert['id']}"):
             self.db.acknowledge_alert(alert['id'])
-            st.experimental_rerun()
+            st.rerun()
     
     def render_top_movers(self):
         """Render top movers section with interactive cards."""
@@ -530,7 +530,7 @@ class MarketDashboard:
             # Manual refresh button
             if st.button("🔄 Refresh Now", use_container_width=True):
                 st.session_state.last_update = datetime.now()
-                st.experimental_rerun()
+                st.rerun()
             
             # Run analysis button
             st.subheader("📊 Analysis")
@@ -541,7 +541,7 @@ class MarketDashboard:
                         st.success(f"Analysis complete! Found {len(alerts)} alerts.")
                         st.session_state.last_update = datetime.now()
                         time.sleep(1)
-                        st.experimental_rerun()
+                        st.rerun()
                     except Exception as e:
                         st.error(f"Analysis failed: {str(e)}")
             

@@ -1,6 +1,6 @@
 # 📊 Market Trend Tracker
 
-A real-time financial dashboard for monitoring stock market trends, momentum analysis, and intelligent alerts. Built with Python, Streamlit, and powered by Finnhub API.
+A real-time dashboard for monitoring stock and crypto momentum using sector-level analysis and trend scoring. Built with Streamlit, powered by Finnhub, and designed to support fast investment decisions.
 
 ![Python](https://img.shields.io/badge/python-v3.9+-blue.svg)
 ![Streamlit](https://img.shields.io/badge/streamlit-v1.28+-red.svg)
@@ -8,193 +8,140 @@ A real-time financial dashboard for monitoring stock market trends, momentum ana
 
 ## 🚀 Features
 
-- **Real-Time Market Analysis**: Track top 30 S&P 500 stocks with live updates
-- **Intelligent Alert System**: Critical, warning, and info alerts for market movements
-- **Sector Analysis**: Monitor sector rotation and performance trends
-- **Interactive Visualizations**: Plotly-powered charts and heatmaps
-- **Top Movers Dashboard**: Instant view of biggest gainers and losers
-- **Performance Metrics**: API health, database stats, and system monitoring
-- **Auto-Refresh**: Configurable automatic updates (30-300 seconds)
-- **Historical Tracking**: SQLite database for trend analysis
-
-## 📸 Screenshots
-
-### Main Dashboard
-- Real-time alerts with severity levels
-- Top movers with momentum indicators
-- Sector performance analysis
-- Interactive trend visualizations
+✅ **Real-time trend scoring** for top 30 S&P 500 tickers  
+📈 **Sector-level momentum analysis** and logging  
+💹 **Live momentum** for top 5 cryptocurrencies  
+🧭 **Sector trend visualizations** over time  
+🧼 **Clean, modular, and extensible** Python architecture  
+🔄 **Auto-refresh dashboard** with configurable intervals  
+📊 **Interactive charts** with Plotly and Altair  
 
 ## 🛠️ Technology Stack
 
 - **Backend**: Python 3.9+
 - **Frontend**: Streamlit
-- **Database**: SQLite
+- **Data Storage**: CSV files
 - **API**: Finnhub (market data)
-- **Visualization**: Plotly, Altair
-- **Testing**: Pytest
+- **Visualization**: Plotly, Altair, Matplotlib, Seaborn
+- **Auto-refresh**: streamlit-autorefresh
 
 ## 📋 Prerequisites
 
 - Python 3.9 or higher
 - Finnhub API key (free at [finnhub.io](https://finnhub.io))
-- 2GB RAM minimum
 - Internet connection for real-time data
 
 ## 🔧 Installation
 
-### 1. Clone the Repository
+### 1. Clone & Setup
 ```bash
 git clone https://github.com/adammattis13/market-trend-tracker.git
 cd market-trend-tracker
-```
-
-### 2. Create Virtual Environment
-```bash
 python3 -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-### 3. Install Dependencies
+### 2. Install Dependencies
 ```bash
-python3 -m pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
-### 4. Set Up Environment Variables
-Create a `.env` file in the root directory:
+### 3. API Key Setup
+
+**Copy the example secrets file:**
 ```bash
-FINNHUB_API_KEY=your_api_key_here
+cp .streamlit/secrets.toml.example .streamlit/secrets.toml
 ```
 
-Or use Streamlit secrets (create `.streamlit/secrets.toml`):
-```toml
-[api_keys]
-finnhub = "your_api_key_here"
-```
-
-### 5. Initialize Database
+**Edit with your actual API keys:**
 ```bash
-python3 -c "from db_manager import DatabaseManager; DatabaseManager()"
+nano .streamlit/secrets.toml
 ```
 
-### 6. Run Initial Analysis
+**Get your API keys:**
+- Finnhub: https://finnhub.io/
+
+### 4. Run the Application
+
+**Run the analyzer:**
 ```bash
-python3 valid_ticker_filter.py
+python valid_ticker_filter.py
 ```
 
-## 🚀 Usage
-
-### Start the Dashboard
+**Launch the dashboard:**
 ```bash
-python3 -m streamlit run dashboard.py
+streamlit run dashboard.py
 ```
 
-The dashboard will open at `http://localhost:8501`
-
-### Command Line Tools
-
-Run market analysis:
-```bash
-python3 valid_ticker_filter.py
-```
-
-Test API connection:
-```bash
-python3 api_client.py
-```
-
-Clean old data:
-```bash
-python3 -c "from db_manager import DatabaseManager; db = DatabaseManager(); print(db.cleanup_old_data(30))"
-```
-
-## 🧪 Testing
-
-Run all tests:
-```bash
-python3 -m pytest tests/ -v
-```
-
-Run with coverage:
-```bash
-python3 -m pytest --cov=. --cov-report=html
-```
+**Open your browser to:**
+- Local: http://localhost:8501
+- Network: http://YOUR_LOCAL_IP:8501
 
 ## 📚 Project Structure
 
 ```
 market-trend-tracker/
-├── dashboard.py           # Streamlit dashboard
-├── valid_ticker_filter.py # Core trend analysis engine
-├── db_manager.py         # Database operations
-├── api_client.py         # Finnhub API client
-├── alert_system.py       # Alert generation system
-├── sector_analyzer.py    # Sector-level analysis
-├── crypto_analyzer.py    # Cryptocurrency tracking
-├── requirements.txt      # Python dependencies
-├── tests/               # Unit tests
-│   ├── test_valid_ticker_filter.py
-│   ├── test_api_client.py
-│   └── test_dashboard.py
-├── .env                 # Environment variables (not in git)
-├── .gitignore          # Git ignore file
-└── README.md           # This file
+├── dashboard.py              # Streamlit dashboard
+├── valid_ticker_filter.py    # Core trend analyzer
+├── sector_analyzer.py        # Sector-level aggregation logic
+├── crypto_analyzer.py        # Crypto trend fetcher
+├── requirements.txt          # Python dependencies
+├── trend_df.csv             # Output: Current trend snapshot
+├── trend_log.csv            # Output: Sector momentum over time
+├── .streamlit/
+│   ├── secrets.toml         # API key config (not in git)
+│   └── secrets.toml.example # Example configuration
+├── .gitignore              # Git ignore file
+└── README.md               # This file
 ```
-
-## 🔐 Security
-
-- API keys are stored in environment variables
-- Database is local (SQLite) - no external data exposure
-- No user data is collected or stored
-- All financial data is public market information
-
-## 🚀 Deployment
-
-### Option 1: Streamlit Community Cloud (Recommended)
-
-1. Push to GitHub
-2. Go to [share.streamlit.io](https://share.streamlit.io)
-3. Connect your GitHub repo
-4. Add your API key in Streamlit secrets
-5. Deploy!
-
-### Option 2: Heroku
-
-See `deployment/heroku.md` for detailed instructions.
-
-### Option 3: AWS/GCP/Azure
-
-See `deployment/cloud.md` for cloud deployment guides.
 
 ## ⚙️ Configuration
 
-### Modify Alert Thresholds
-Edit `alert_system.py`:
+### Dashboard Settings
+- **Auto-refresh interval**: Configurable in sidebar (30-300 seconds)
+- **Data filters**: Toggle sectors and time ranges
+- **Chart types**: Switch between different visualizations
+
+### Modify Tickers
+Edit `valid_ticker_filter.py` to customize which stocks to track:
 ```python
-self.thresholds = {
-    'momentum_surge': 5.0,      # Adjust sensitivity
-    'momentum_drop': -5.0,
-    'volume_spike': 2.0,
-}
+# Add or remove tickers from the analysis
+TICKERS_TO_ANALYZE = ['AAPL', 'MSFT', 'GOOGL', ...]
 ```
 
-### Add/Remove Tickers
-Edit `valid_ticker_filter.py`:
-```python
-TOP_SP500_TICKERS = [
-    # Add your tickers here
-]
-```
+## 🚀 Deployment
 
-### Change Refresh Rate
-In the dashboard sidebar, adjust the refresh interval slider (30-300 seconds).
+### Streamlit Community Cloud (Recommended)
+
+1. Push your code to GitHub
+2. Go to [share.streamlit.io](https://share.streamlit.io)
+3. Connect your GitHub repository
+4. Add your Finnhub API key in Streamlit Cloud secrets:
+   ```toml
+   [api_keys]
+   finnhub = "your_api_key_here"
+   ```
+5. Deploy!
+
+### Local Network Access
+To access from other devices on your network:
+```bash
+streamlit run dashboard.py --server.address 0.0.0.0
+```
 
 ## 📈 Performance
 
-- Analysis of 30 tickers: ~2 seconds
-- Dashboard refresh: <1 second
-- API calls: 60/minute limit
-- Database size: ~10MB per month
+- **Analysis speed**: ~2-3 seconds for 30 tickers
+- **Dashboard refresh**: <1 second
+- **API rate limits**: Respect Finnhub's free tier limits
+- **Memory usage**: ~100-200MB typical
+
+## 🔐 Security
+
+- ✅ API keys stored in local secrets file (not in git)
+- ✅ No user data collection
+- ✅ All market data is public information
+- ✅ Local data storage only
 
 ## 🤝 Contributing
 
@@ -204,32 +151,45 @@ In the dashboard sidebar, adjust the refresh interval slider (30-300 seconds).
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
+## 🐛 Troubleshooting
+
+### Common Issues
+
+**"streamlit command not found"**
+```bash
+# Make sure you're in your virtual environment
+source venv/bin/activate
+pip install streamlit
+```
+
+**API key errors**
+```bash
+# Check your secrets file exists and has correct format
+cat .streamlit/secrets.toml
+```
+
+**Import errors**
+```bash
+# Reinstall requirements
+pip install -r requirements.txt --force-reinstall
+```
+
 ## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 
-- [Finnhub](https://finnhub.io) for market data API
-- [Streamlit](https://streamlit.io) for the amazing dashboard framework
+- [Finnhub](https://finnhub.io) for providing free market data API
+- [Streamlit](https://streamlit.io) for the excellent dashboard framework
 - [Plotly](https://plotly.com) for interactive visualizations
 
 ## 📞 Support
 
-- Create an issue for bug reports
-- Check existing issues before creating new ones
-- For feature requests, use the "enhancement" label
-
-## 🗺️ Roadmap
-
-- [ ] Add cryptocurrency support
-- [ ] Email/SMS alerts
-- [ ] Machine learning predictions
-- [ ] Portfolio tracking
-- [ ] News sentiment analysis
-- [ ] Mobile app
-- [ ] Multi-user support
+- 🐛 **Bug reports**: Create an issue with detailed description
+- 💡 **Feature requests**: Use the "enhancement" label
+- ❓ **Questions**: Check existing issues first
 
 ---
 
-**Built with ❤️ by Adam Mattis**
+**Built by [Adam Mattis](https://github.com/adammattis13)**
