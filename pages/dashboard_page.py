@@ -1,6 +1,7 @@
+# pages/dashboard_page.py
 """
 Enhanced Dashboard Page - Main market overview with technical analysis
-Fixed to work with corrected technical_indicators.py
+Restored version with all features to match the quality of other pages
 """
 
 import streamlit as st
@@ -11,11 +12,15 @@ from plotly.subplots import make_subplots
 import numpy as np
 from datetime import datetime, timedelta
 import sys
+import os
 from pathlib import Path
 
 # Add parent directory to path for imports
-parent_dir = Path(__file__).parent.parent
-sys.path.append(str(parent_dir))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+# Import from root
+from valid_ticker_filter import TrendAnalyzer
+from src.config import get_api_key, TREND_FILE, LOG_FILE, REFRESH_INTERVAL
 
 # Import technical analysis modules
 try:
@@ -26,15 +31,6 @@ except ImportError as e:
     st.info("Make sure technical_indicators.py is in your project root")
     TECHNICAL_AVAILABLE = False
 
-# Try to import existing modules
-try:
-    from valid_ticker_filter import load_trend_data
-    from db_manager import DatabaseManager
-    from alert_system import AlertSystem
-    HAS_REAL_DATA = True
-except ImportError:
-    HAS_REAL_DATA = False
-
 def show():
     """Enhanced dashboard page with technical analysis"""
     
@@ -42,6 +38,8 @@ def show():
     
     if not TECHNICAL_AVAILABLE:
         st.warning("⚠️ Technical indicators not available. Please check technical_indicators.py")
+        # Fall back to basic dashboard
+        show_basic_dashboard()
         return
     
     # Top-level controls
@@ -55,8 +53,13 @@ def show():
     
     with col3:
         if st.button("🔄 Refresh Data", use_container_width=True):
-            st.success("Data refreshed!")
-            st.rerun()
+            try:
+                analyzer = TrendAnalyzer()
+                analyzer.run_analysis()
+                st.success("Data refreshed!")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Refresh failed: {str(e)}")
     
     # Market summary metrics
     display_market_summary()
@@ -72,6 +75,46 @@ def show():
     
     with signals_tab:
         display_trading_signals()
+
+def show_basic_dashboard():
+    """Fallback basic dashboard if technical indicators not available"""
+    # Initialize session state
+    if 'last_update' not in st.session_state:
+        st.session_state.last_update = datetime.now()
+    
+    # Header with refresh
+    col1, col2, col3 = st.columns([3, 1, 1])
+    
+    with col1:
+        st.subheader("Real-Time Market Trends")
+    
+    with col2:
+        st.metric("Last Update", st.session_state.last_update.strftime("%H:%M:%S"))
+    
+    with col3:
+        if st.button("🔄 Refresh"):
+            try:
+                analyzer = TrendAnalyzer()
+                analyzer.run_analysis()
+                st.session_state.last_update = datetime.now()
+                st.success("Data refreshed!")
+                st.rerun()
+            except Exception as e:
+                st.error(f"Refresh failed: {str(e)}")
+    
+    # Load and display basic data
+    try:
+        if TREND_FILE.exists():
+            df = pd.read_csv(TREND_FILE)
+            if not df.empty:
+                display_basic_metrics(df)
+                display_basic_table(df)
+        else:
+            st.warning("No trend data found. Running initial analysis...")
+            analyzer = TrendAnalyzer()
+            df = analyzer.run_analysis()
+    except Exception as e:
+        st.error(f"Error loading data: {str(e)}")
 
 def display_market_summary():
     """Display enhanced market summary with technical indicators"""
@@ -384,108 +427,123 @@ def display_technical_summary_panel(ta: TechnicalAnalysis, symbol: str):
 def display_enhanced_movers():
     """Display top movers with technical signals"""
     
-    # Enhanced movers data with technical signals
-    gainers = [
-        {
-            "Symbol": "NVDA",
-            "Price": "$875.45",
-            "Change": "+45.23",
-            "Change%": "+5.45%",
-            "RSI": "42.3",
-            "Signal": "🟢 BUY",
-            "Volume": "High"
-        },
-        {
-            "Symbol": "AAPL",
-            "Price": "$195.67",
-            "Change": "+8.34",
-            "Change%": "+4.46%",
-            "RSI": "58.7",
-            "Signal": "🟡 HOLD",
-            "Volume": "Normal"
-        },
-        {
-            "Symbol": "MSFT",
-            "Price": "$423.12",
-            "Change": "+15.67",
-            "Change%": "+3.85%",
-            "RSI": "65.2",
-            "Signal": "🟡 HOLD",
-            "Volume": "High"
-        }
-    ]
-    
-    losers = [
-        {
-            "Symbol": "META",
-            "Price": "$485.23",
-            "Change": "-25.34",
-            "Change%": "-4.97%",
-            "RSI": "28.4",
-            "Signal": "🟢 BUY",
-            "Volume": "High"
-        },
-        {
-            "Symbol": "NFLX",
-            "Price": "$567.89",
-            "Change": "-18.45",
-            "Change%": "-3.15%",
-            "RSI": "35.7",
-            "Signal": "🟡 HOLD",
-            "Volume": "Normal"
-        },
-        {
-            "Symbol": "TSLA",
-            "Price": "$238.45",
-            "Change": "-12.34",
-            "Change%": "-4.93%",
-            "RSI": "25.8",
-            "Signal": "🟢 BUY",
-            "Volume": "Very High"
-        }
-    ]
+    # Load real data if available
+    try:
+        if TREND_FILE.exists():
+            df = pd.read_csv(TREND_FILE)
+            
+            # Get top gainers and losers
+            gainers = df.nlargest(5, 'Momentum_%')
+            losers = df.nsmallest(5, 'Momentum_%')
+            
+            # Add technical signals (simulated for now)
+            for idx, row in gainers.iterrows():
+                momentum = row['Momentum_%']
+                gainers.loc[idx, 'RSI'] = str(round(50 + momentum * 2, 1))
+                gainers.loc[idx, 'Signal'] = "🟢 BUY" if momentum > 3 else "🟡 HOLD"
+                gainers.loc[idx, 'Volume'] = "High" if momentum > 2 else "Normal"
+            
+            for idx, row in losers.iterrows():
+                momentum = row['Momentum_%']
+                losers.loc[idx, 'RSI'] = str(round(50 + momentum * 2, 1))
+                losers.loc[idx, 'Signal'] = "🟢 BUY" if momentum < -3 else "🟡 HOLD"
+                losers.loc[idx, 'Volume'] = "High" if abs(momentum) > 2 else "Normal"
+            
+            gainers_data = gainers.to_dict('records')
+            losers_data = losers.to_dict('records')
+            
+        else:
+            # Fallback to sample data
+            gainers_data = [
+                {
+                    "Symbol": "NVDA",
+                    "Current_Price": 875.45,
+                    "Momentum_%": 5.45,
+                    "RSI": "42.3",
+                    "Signal": "🟢 BUY",
+                    "Volume": "High"
+                },
+                {
+                    "Symbol": "AAPL",
+                    "Current_Price": 195.67,
+                    "Momentum_%": 4.46,
+                    "RSI": "58.7",
+                    "Signal": "🟡 HOLD",
+                    "Volume": "Normal"
+                }
+            ]
+            
+            losers_data = [
+                {
+                    "Symbol": "META",
+                    "Current_Price": 485.23,
+                    "Momentum_%": -4.97,
+                    "RSI": "28.4",
+                    "Signal": "🟢 BUY",
+                    "Volume": "High"
+                },
+                {
+                    "Symbol": "TSLA",
+                    "Current_Price": 238.45,
+                    "Momentum_%": -4.93,
+                    "RSI": "25.8",
+                    "Signal": "🟢 BUY",
+                    "Volume": "Very High"
+                }
+            ]
+    except Exception as e:
+        st.error(f"Error loading movers data: {str(e)}")
+        return
     
     tab1, tab2 = st.tabs(["📈 Top Gainers", "📉 Top Losers"])
     
     with tab1:
-        display_enhanced_movers_table(gainers, "gainers")
+        display_enhanced_movers_table(gainers_data, "gainers")
     
     with tab2:
-        display_enhanced_movers_table(losers, "losers")
+        display_enhanced_movers_table(losers_data, "losers")
 
 def display_enhanced_movers_table(movers_data, category):
     """Display enhanced movers table with technical data"""
     
-    for mover in movers_data:
+    for i, mover in enumerate(movers_data):
         with st.container():
             col1, col2, col3, col4, col5, col6, col7 = st.columns([1, 1.5, 1, 1, 0.8, 1, 0.8])
             
             with col1:
-                st.markdown(f"**{mover['Symbol']}**")
+                st.markdown(f"**{mover.get('Symbol', mover.get('Ticker', 'N/A'))}**")
             
             with col2:
-                st.markdown(f"{mover['Price']}")
+                price = mover.get('Current_Price', 0)
+                st.markdown(f"${price:.2f}" if isinstance(price, (int, float)) else str(price))
             
             with col3:
-                color = "🟢" if mover['Change'].startswith('+') else "🔴"
-                st.markdown(f"{color} {mover['Change']}")
+                momentum = mover.get('Momentum_%', 0)
+                color = "🟢" if momentum > 0 else "🔴"
+                st.markdown(f"{color} {momentum:+.2f}%")
             
             with col4:
-                st.markdown(f"{mover['Change%']}")
+                st.markdown(f"{momentum:.2f}%")
             
             with col5:
-                rsi_value = float(mover['RSI'])
+                rsi = mover.get('RSI', 'N/A')
+                if isinstance(rsi, str):
+                    rsi_value = float(rsi) if rsi != 'N/A' else 50
+                else:
+                    rsi_value = float(rsi)
                 rsi_color = "🟢" if rsi_value < 30 else "🔴" if rsi_value > 70 else "🟡"
-                st.markdown(f"{rsi_color} {mover['RSI']}")
+                st.markdown(f"{rsi_color} {rsi}")
             
             with col6:
-                st.markdown(f"{mover['Signal']}")
+                st.markdown(f"{mover.get('Signal', '🟡 HOLD')}")
             
             with col7:
-                volume_color = "🔥" if mover['Volume'] == "Very High" else "📈" if mover['Volume'] == "High" else "📊"
+                volume = mover.get('Volume', 'Normal')
+                volume_color = "🔥" if volume == "Very High" else "📈" if volume == "High" else "📊"
                 st.markdown(f"{volume_color}")
         
-        st.markdown("---")
+        if i < len(movers_data) - 1:
+            st.markdown("---")
 
 def display_technical_panel(symbol: str):
     """Display technical indicators panel"""
@@ -645,14 +703,37 @@ def display_smart_alerts():
 def display_enhanced_sector_performance():
     """Display enhanced sector performance with technical analysis"""
     
-    sectors = {
-        'Technology': {'return': 2.45, 'trend': '🟢 Bullish', 'rsi': 58.2},
-        'Healthcare': {'return': 1.23, 'trend': '🟡 Neutral', 'rsi': 52.7},
-        'Financial': {'return': -0.87, 'trend': '🔴 Bearish', 'rsi': 34.5},
-        'Energy': {'return': -1.45, 'trend': '🔴 Bearish', 'rsi': 28.9},
-        'Consumer': {'return': 0.67, 'trend': '🟡 Neutral', 'rsi': 48.3},
-        'Industrial': {'return': 1.89, 'trend': '🟢 Bullish', 'rsi': 62.1}
-    }
+    # Try to load real sector data
+    try:
+        if LOG_FILE.exists():
+            sector_df = pd.read_csv(LOG_FILE)
+            # Get most recent data for each sector
+            latest_sectors = sector_df.groupby('Sector').last()
+            
+            sectors = {}
+            for sector, data in latest_sectors.iterrows():
+                sectors[sector] = {
+                    'return': data.get('Avg_Momentum_%', 0),
+                    'trend': '🟢 Bullish' if data.get('Avg_Momentum_%', 0) > 1 else '🔴 Bearish' if data.get('Avg_Momentum_%', 0) < -1 else '🟡 Neutral',
+                    'rsi': 50 + data.get('Avg_Momentum_%', 0) * 5  # Simulated RSI
+                }
+        else:
+            # Fallback to sample data
+            sectors = {
+                'Technology': {'return': 2.45, 'trend': '🟢 Bullish', 'rsi': 58.2},
+                'Healthcare': {'return': 1.23, 'trend': '🟡 Neutral', 'rsi': 52.7},
+                'Financial': {'return': -0.87, 'trend': '🔴 Bearish', 'rsi': 34.5},
+                'Energy': {'return': -1.45, 'trend': '🔴 Bearish', 'rsi': 28.9},
+                'Consumer': {'return': 0.67, 'trend': '🟡 Neutral', 'rsi': 48.3},
+                'Industrial': {'return': 1.89, 'trend': '🟢 Bullish', 'rsi': 62.1}
+            }
+    except Exception as e:
+        st.error(f"Error loading sector data: {str(e)}")
+        sectors = {}
+    
+    if not sectors:
+        st.info("No sector data available")
+        return
     
     # Create enhanced sector chart
     fig = go.Figure()
@@ -913,3 +994,42 @@ def display_trading_signals():
             st.markdown(f"**{metric}**")
             st.markdown(f"{data['Color']} {data['Level']}")
             st.markdown(f"_{data['Value']}_")
+
+def display_basic_metrics(df):
+    """Display basic metrics for fallback dashboard"""
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        avg_momentum = df['Momentum_%'].mean()
+        st.metric("Avg Momentum", f"{avg_momentum:.2f}%", delta=f"{avg_momentum:.2f}%")
+    
+    with col2:
+        positive_stocks = len(df[df['Momentum_%'] > 0])
+        st.metric("Stocks Up", f"{positive_stocks}/{len(df)}", delta=f"{(positive_stocks/len(df)*100):.1f}%")
+    
+    with col3:
+        top_performer = df.iloc[0]
+        st.metric("Top Performer", top_performer['Ticker'], delta=f"{top_performer['Momentum_%']:.2f}%")
+    
+    with col4:
+        bottom_performer = df.iloc[-1]
+        st.metric("Bottom Performer", bottom_performer['Ticker'], delta=f"{bottom_performer['Momentum_%']:.2f}%")
+
+def display_basic_table(df):
+    """Display basic table for fallback dashboard"""
+    st.subheader("Live Trend Scores")
+    
+    df_display = df.copy()
+    df_display['Signal'] = df_display['Signal'].apply(
+        lambda x: f"{'🟢' if 'BUY' in x else '🔴' if 'SELL' in x else '🟡'} {x}"
+    )
+    
+    st.dataframe(
+        df_display[['Ticker', 'Sector', 'Current_Price', 'Momentum_%', 'Trend_Score', 'Signal']],
+        use_container_width=True,
+        height=400
+    )
+
+# This is important for Streamlit multi-page apps
+if __name__ == "__main__":
+    show()
