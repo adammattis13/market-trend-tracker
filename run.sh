@@ -13,8 +13,8 @@ mkdir -p data data/backups
 
 # Run the analyzer first to generate data
 echo "Running market analysis..."
-python -m src.run_analysis
+python valid_ticker_filter.py
 
 # Launch the dashboard
 echo "Launching dashboard..."
-streamlit run dashboard.py
+streamlit run main_app.py
