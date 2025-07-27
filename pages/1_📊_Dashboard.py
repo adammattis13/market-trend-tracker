@@ -1030,9 +1030,5 @@ def display_basic_table(df):
         height=400
     )
 
-# This is important for Streamlit multi-page apps
-if __name__ == "__main__":
-    show()
-    
-# This ensures it works in multi-page app
-    show()
+# Call show() once for multi-page app
+show()
