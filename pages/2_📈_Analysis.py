@@ -853,6 +853,3 @@ def show_backtesting():
 # This is important for Streamlit multi-page apps
 if __name__ == "__main__":
     show()
-    
-# This ensures it works in multi-page app
-    show()
